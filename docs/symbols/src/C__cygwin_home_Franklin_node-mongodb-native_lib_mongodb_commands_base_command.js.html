@@ -1,0 +1,46 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">BinaryParser</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'../bson/binary_parser'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">BinaryParser</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>  2</span> 
+<span class='line'>  3</span> </span><span class="COMM">/**@constructor
+<span class='line'>  4</span>   Base object used for common functionality
+<span class='line'>  5</span> **/</span><span class="WHIT">
+<span class='line'>  6</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">BaseCommand</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">exports.BaseCommand</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>  8</span> 
+<span class='line'>  9</span> </span><span class="COMM">/**@function
+<span class='line'> 10</span> Creates command with standard header file?
+<span class='line'> 11</span> */</span><span class="WHIT">
+<span class='line'> 12</span> </span><span class="NAME">BaseCommand.prototype.toBinary</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="WHIT">  </span><span class="COMM">// Get the command op code</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">op_code</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getOpCode</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">  </span><span class="COMM">// Get the command data structure</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">command</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.getCommand</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 17</span> </span><span class="WHIT">  </span><span class="COMM">// Total Size of command</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">totalSize</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">*</span><span class="NUMB">4</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">command.length</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="WHIT">  </span><span class="COMM">// Create the command with the standard header file</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">BinaryParser.fromInt</span><span class="PUNC">(</span><span class="NAME">totalSize</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">BinaryParser.fromInt</span><span class="PUNC">(</span><span class="NAME">this.requestId</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">BinaryParser.fromInt</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">BinaryParser.fromInt</span><span class="PUNC">(</span><span class="NAME">op_code</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">command</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 22</span> 
+<span class='line'> 23</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="NAME">BaseCommand.prototype.getRequestId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">  </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.requestId</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="NAME">this.requestId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.requestId</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 28</span> 
+<span class='line'> 29</span> </span><span class="COMM">// OpCodes</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="NAME">BaseCommand.OP_REPLY</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="NAME">BaseCommand.OP_MSG</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 32</span> </span><span class="NAME">BaseCommand.OP_UPDATE</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">2001</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="NAME">BaseCommand.OP_INSERT</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">	</span><span class="NUMB">2002</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="NAME">BaseCommand.OP_GET_BY_OID</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">2003</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="NAME">BaseCommand.OP_QUERY</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">2004</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 36</span> </span><span class="NAME">BaseCommand.OP_GET_MORE</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">2005</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 37</span> </span><span class="NAME">BaseCommand.OP_DELETE</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">	</span><span class="NUMB">2006</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="NAME">BaseCommand.OP_KILL_CURSORS</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">	</span><span class="NUMB">2007</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 39</span> </span></pre></body></html>

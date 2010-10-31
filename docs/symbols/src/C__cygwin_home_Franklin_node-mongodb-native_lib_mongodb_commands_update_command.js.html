@@ -1,0 +1,71 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">BaseCommand</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'./base_command'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">BaseCommand</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>  2</span> </span><span class="WHIT">  </span><span class="NAME">BinaryParser</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'../bson/binary_parser'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">BinaryParser</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>  3</span> </span><span class="WHIT">  </span><span class="NAME">inherits</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">require</span><span class="PUNC">(</span><span class="STRN">'sys'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">inherits</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>  4</span> 
+<span class='line'>  5</span> </span><span class="COMM">/**
+<span class='line'>  6</span> * Update Document Command
+<span class='line'>  7</span> * @constuctor
+<span class='line'>  8</span> * @class
+<span class='line'>  9</span> * @param db database name
+<span class='line'> 10</span> * @param collectionName Name of the collection
+<span class='line'> 11</span> * @param spec
+<span class='line'> 12</span> * @param document
+<span class='line'> 13</span> * @param options
+<span class='line'> 14</span> */</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">UpdateCommand</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">exports.UpdateCommand</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">db</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">collectionName</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">spec</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">document</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">  </span><span class="NAME">BaseCommand.apply</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 17</span> 
+<span class='line'> 18</span> </span><span class="WHIT">  </span><span class="NAME">this.collectionName</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">collectionName</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="WHIT">  </span><span class="NAME">this.spec</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">spec</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">  </span><span class="NAME">this.document</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">document</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="WHIT">  </span><span class="NAME">this.db</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">db</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 22</span> 
+<span class='line'> 23</span> </span><span class="WHIT">  </span><span class="COMM">// Generate correct flags</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">db_upsert</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">db_multi_update</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="WHIT">  </span><span class="NAME">db_upsert</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">[</span><span class="STRN">'upsert'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">[</span><span class="STRN">'upsert'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">db_upsert</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="WHIT">  </span><span class="NAME">db_multi_update</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">options</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">options</span><span class="PUNC">[</span><span class="STRN">'multi'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">options</span><span class="PUNC">[</span><span class="STRN">'multi'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">db_multi_update</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 28</span> 
+<span class='line'> 29</span> </span><span class="WHIT">  </span><span class="COMM">// Flags</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="WHIT">  </span><span class="NAME">this.flags</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">parseInt</span><span class="PUNC">(</span><span class="NAME">db_multi_update.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">db_upsert.toString</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 32</span> 
+<span class='line'> 33</span> </span><span class="NAME">inherits</span><span class="PUNC">(</span><span class="NAME">UpdateCommand</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">BaseCommand</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 34</span> 
+<span class='line'> 35</span> </span><span class="COMM">/**
+<span class='line'> 36</span> Returns the opcode. Inherited from BaseCommand
+<span class='line'> 37</span> */</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="NAME">UpdateCommand.prototype.getOpCode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">BaseCommand.OP_UPDATE</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 40</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 41</span> 
+<span class='line'> 42</span> </span><span class="COMM">/*
+<span class='line'> 43</span> struct {
+<span class='line'> 44</span>     MsgHeader header;             // standard message header
+<span class='line'> 45</span>     int32     ZERO;               // 0 - reserved for future use
+<span class='line'> 46</span>     cstring   fullCollectionName; // "dbname.collectionname"
+<span class='line'> 47</span>     int32     flags;              // bit vector. see below
+<span class='line'> 48</span>     BSON      spec;               // the query to select the document
+<span class='line'> 49</span>     BSON      document;           // the document data to update with or insert
+<span class='line'> 50</span> }
+<span class='line'> 51</span> */</span><span class="WHIT">
+<span class='line'> 52</span> 
+<span class='line'> 53</span> </span><span class="COMM">/**
+<span class='line'> 54</span> Generates and returns the command string
+<span class='line'> 55</span> */</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="NAME">UpdateCommand.prototype.getCommand</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">  </span><span class="COMM">// Generate the command string</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">  </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">command_string</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">BinaryParser.fromInt</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">BinaryParser.encode_cstring</span><span class="PUNC">(</span><span class="NAME">this.collectionName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">  </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">command_string</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">BinaryParser.fromInt</span><span class="PUNC">(</span><span class="NAME">this.flags</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.db.bson_serializer.BSON.serialize</span><span class="PUNC">(</span><span class="NAME">this.spec</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.db.bson_serializer.BSON.serialize</span><span class="PUNC">(</span><span class="NAME">this.document</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 61</span> 
+<span class='line'> 62</span> </span><span class="COMM">// Constants</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="NAME">UpdateCommand.DB_UPSERT</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 64</span> </span><span class="NAME">UpdateCommand.DB_MULTI_UPDATE</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span></pre></body></html>
